@@ -1,0 +1,15 @@
+{  
+    "select_full": "SELECT [columns] FROM imdb.imdb",
+    
+    "select": "SELECT [columns] FROM imdb.imdb WHERE [conditions]",
+    
+    "count": "SELECT COUNT([columns]) FROM imdb.imdb WHERE [conditions]",
+    
+    "sum": "SELECT SUM([columns]), FROM imdb.imdb WHERE [conditions]",
+    
+    "avg": "SELECT AVG([columns]), FROM imdb.imdb WHERE [conditions]",
+
+    "min": "SELECT MIN([columns]), FROM imdb.imdb WHERE [conditions]",
+   
+    "max": "SELECT MAX([columns]), FROM imdb.imdb WHERE [conditions]"
+}

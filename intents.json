@@ -1,0 +1,18 @@
+{
+ "select": {
+  "patterns": [
+   "Show movies with Tom Hanks"
+  ],
+  "query": [
+   "SELECT [columns] FROM imdb.imdb WHERE [conditions]"
+  ]
+ },
+ "count": {
+  "patterns": [
+   "How many movies did Mel Gibson direct?"
+  ],
+  "query": [
+   "SELECT COUNT([columns]) FROM imdb.imdb WHERE [conditions]"
+  ]
+ }
+}
