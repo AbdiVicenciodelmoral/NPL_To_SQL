@@ -1,8 +1,7 @@
-
 import spacy
 from spacy.cli import download
 import pandas as pd
-import nltk
+import nltk, random, json , pickle
 from nltk.tokenize import word_tokenize
 from nltk.util import ngrams
 from nltk.stem import WordNetLemmatizer
@@ -18,13 +17,7 @@ import textacy
 import gensim
 from gensim.models import Word2Vec
 import gensim.downloader as api
-#from gensim.test.utils import common_texts
-
 import csv, sys
-import nltk, random, json , pickle
-#nltk.download('punkt');nltk.download('wordnet')
-from nltk.stem import WordNetLemmatizer
-from nltk.tokenize import word_tokenize
 import numpy as np
 from tensorflow.keras.models import load_model
 from sklearn.feature_extraction.text import CountVectorizer
@@ -33,14 +26,10 @@ import os.path
 class text_processing:
     def __init__(self, sentence,prediction):
         self.nlp = spacy.load('en_core_web_lg')
-        
         self.inputStr = self.nlp(sentence)
         self.nlp2 = nltk.sent_tokenize(sentence)
         self.pred = prediction
         self.cols = self.processColumns()
-        #!python -m spacy download en_core_web_md --user
-        #nlp =  spacy.load('en_core_web_sm')
-        
         self.nouns ,self.verbs = self.get_nouns()
         self.noun_chunks = self.get_nounChunks()
         self.entities,self.back_entities = self.get_entitiy()
@@ -52,8 +41,6 @@ class text_processing:
         with open(path, newline='') as f:
             reader = csv.reader(f)
             try:
-                #for row in reader:
-                #    print(row)
                 cols = next(reader)
             except csv.Error as e:
                 sys.exit('file {}, line {}: {}'.format(filename, reader.line_num, e))
@@ -133,10 +120,7 @@ class text_processing:
                     
     def unique_conditions(self,P):
         holder = []
- 
-        # traverse for all elements
         for x in P:
-            # check if exists in unique_list or not
             if x not in P:
                 holder.append(x)
         return holder
@@ -147,29 +131,23 @@ class text_processing:
         print("COLUMNS:",self.columns)
         print("ENTITIES:",self.entities)
         print("B_ENTITIES:",self.back_entities)
-
         
         people = []
-
         for e in self.entities:
             print(e)
             if 'PERSON' in e:
                 people.append(e)
                 
-
         for b in self.back_entities:
             print(b)
             if 'PERSON' in b:
                 if b not in people:
                     people.append(b)
         
-        
-     
         print("People:",people)
         for p in people:
             self.add_person(p)
 
-        #self.conditions = list(set(self.conditions))
         set_cols = self.pred.count('[columns]')
         set_con = self.pred.count('[conditions]')
         col_len = len(self.columns)
@@ -199,12 +177,6 @@ class text_processing:
         return self.pred
 
 
-
-
-
-
-
-
 lemmatizer=WordNetLemmatizer()
 context={};
 class Testing:
@@ -213,10 +185,15 @@ class Testing:
         self.intents = json.loads(open('intents.json').read())
         
         #load the training_data file which contains training data
-        data=pickle.load(open("training_data","rb"))
-        self.words = data['words']
-        self.classes = data['classes']
         self.model = None
+        self.words = None
+        self.classes = None
+
+        if os.path.exists('training_data'):
+            data=pickle.load(open("training_data","rb"))
+            self.words = data['words']
+            self.classes = data['classes']
+        
         if os.path.exists('learned_model.h5'):
             self.model = load_model('learned_model.h5')
 
@@ -240,20 +217,19 @@ class Testing:
         input_words = list(map(lemmatizer.lemmatize,input_words))
         input_words = list(filter(lambda x:x not in special_chars,input_words))
         
-        
-        #Construct the vectorizer
-        cv = CountVectorizer(tokenizer=self.tokens,analyzer="word",stop_words=None)
-        input_words =' '.join(input_words)
-        
-
-        #Fit the vectorizer on the the words
-        words = ' '.join(self.words)
-        vectorize = cv.fit([words])
-        
-        # Create vector of input sentence
-        word_vector = vectorize.transform([input_words]).toarray().tolist()[0]
-        
-        return(np.array(word_vector)) 
+        if self.words != None:
+            #Construct the vectorizer
+            cv = CountVectorizer(tokenizer=self.tokens,analyzer="word",stop_words=None)
+            input_words =' '.join(input_words)
+            
+            #Fit the vectorizer on the the words
+            words = ' '.join(self.words)
+            vectorize = cv.fit([words])
+            
+            # Create vector of input sentence
+            word_vector = vectorize.transform([input_words]).toarray().tolist()[0]
+            
+            return(np.array(word_vector)) 
 
     
     def classify(self,sentence):
@@ -299,13 +275,12 @@ class Testing:
         return self.classify(sentence)
     
     def Query(self,sentence):
-        #get class of users query
+        #Predict query tag
         query = None
         results = self.classify(sentence)
-        print("Test.py Results:",sentence,results)
-        #store random query to the query
-        ans=""
+        print("Results:",sentence,results)
         
+        ans=""
         if len(results) > 0:
             tag = results[0][0]
             intent = self.intents[tag]

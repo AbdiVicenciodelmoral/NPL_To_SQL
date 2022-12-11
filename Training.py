@@ -14,10 +14,6 @@ from tensorflow.keras.optimizers import Adagrad
 
 
 lemmatizer=WordNetLemmatizer()
-
-
-
-
 class initializeModel:
     def __init__(self):
         # read and load the intent file which contains sql structure
@@ -27,10 +23,9 @@ class initializeModel:
 
     def process_data(self):
         
-        #Extract patterns from dicts and tokenize them into words
+        #Extract patterns 
         x = lambda x:x
         cls = list(x(self.intents))
-        
         self.pattern = list(map(lambda x:self.intents[x]["patterns"],self.intents))
         self.words = list(map(word_tokenize,flatten(self.pattern)))
         
@@ -92,17 +87,16 @@ class initializeModel:
         random.shuffle(training)
         training= np.array(training,dtype=object)
         
-        # Features
+        
         if len(training)>0:
+            # Features
             self.train_X = list(training[:,0])
-            # Classes
+            # Targets
             self.train_y = list(training[:,1])
         else:
             self.train_X = []
-            # Classes
             self.train_y = []
-        #print("X:",self.train_X)
-        #print("Y:",self.train_y)
+
         
 
     def build_model(self):
@@ -135,8 +129,6 @@ class initializeModel:
 
         else:
             print("NO TRAINING DATA AVAILABLE")
-
-
 
 
 
