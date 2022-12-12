@@ -1,7 +1,8 @@
 {
  "select": {
   "patterns": [
-   "Show movies with Tom Hanks"
+   "movies",
+   "show"
   ],
   "query": [
    "SELECT [columns] FROM imdb.imdb WHERE [conditions]"
@@ -9,7 +10,9 @@
  },
  "count": {
   "patterns": [
-   "How many movies did Mel Gibson direct?"
+   "how many movies",
+   "many",
+   "have"
   ],
   "query": [
    "SELECT COUNT([columns]) FROM imdb.imdb WHERE [conditions]"

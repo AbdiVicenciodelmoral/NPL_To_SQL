@@ -36,6 +36,10 @@ class text_processing:
         self.columns = self.get_columns()
         self.conditions = []
     
+    def tokens(self,text):
+        tokens = word_tokenize(text)
+        return tokens
+
     def processColumns(self):
         path = 'Data/IMDB_Movie_Data.csv'
         with open(path, newline='') as f:
@@ -114,7 +118,7 @@ class text_processing:
             self.columns.remove('director')
                         
         if 'actor'in self.columns:
-            c = "imdb.actors LIKE \"%{actor}%\"".format(actor=p[1])
+            c = "imdb.actors LIKE \'%{actor}%\'".format(actor=p[1])
             self.conditions.append(c)
             self.columns.remove('actor')
                     
@@ -125,13 +129,19 @@ class text_processing:
                 holder.append(x)
         return holder
 
-    def constructQuery(self):
+    def constructQuery(self,tag,pred_columns):
         print("NOUNS:",self.nouns)
         print("VERBS:",self.verbs)
         print("COLUMNS:",self.columns)
         print("ENTITIES:",self.entities)
         print("B_ENTITIES:",self.back_entities)
-        
+        print("Predicted columns:",pred_columns)
+        pred_cols = pred_columns.replace(',',"")
+        pred_cols = pred_cols.split()
+
+        print("After token PREDICTED COLUMNS:",pred_cols)
+        self.columns = list(set(self.columns)|set(pred_cols))
+        print("AFter Union:",self.columns)
         people = []
         for e in self.entities:
             print(e)
@@ -152,19 +162,27 @@ class text_processing:
         set_con = self.pred.count('[conditions]')
         col_len = len(self.columns)
         
+        nums = ['metascore','revenue','rank','runtime','year','rating','votes']
+        agg = ['avg','min','max','sum']
         if col_len > 1:
             co = ""
-            for i in range(col_len):
-                if i == col_len-1:
-                    co+=self.columns[i] 
-                else:
-                    co+=self.columns[i] + ','
+            if tag not in agg:
+                for i in range(col_len):
+                    if i == col_len-1:
+                        co+=self.columns[i] 
+                    else:
+                        co+=self.columns[i] + ','
+            else:
+                for c in self.columns:
+                    if c in nums:
+                        self.pred = self.pred.replace('[columns]',c)
             
             self.pred = self.pred.replace('[columns]',co)
         else:
             self.pred = self.pred.replace('[columns]',self.columns[0])
         
         print("CONDTIONS:",self.conditions)
+        
         if len(self.conditions) >= 1:
             for i in range(len(self.conditions)):
                 print("Replacing")
@@ -183,11 +201,18 @@ class Testing:
     def __init__(self):
         #load the intent file
         self.intents = json.loads(open('intents.json').read())
+        self.column_intents = json.loads(open('column_intents.json').read())
         
         #load the training_data file which contains training data
         self.model = None
         self.words = None
         self.classes = None
+        self.tag = None
+        
+        self.column_model = None
+        self.column_words = None
+        self.column_classes = None
+        self.pred_columns = None
 
         if os.path.exists('training_data'):
             data=pickle.load(open("training_data","rb"))
@@ -197,7 +222,16 @@ class Testing:
         if os.path.exists('learned_model.h5'):
             self.model = load_model('learned_model.h5')
 
+        if os.path.exists('column_training_data'):
+            data=pickle.load(open("column_training_data","rb"))
+            self.column_words = data['words']
+            self.column_classes = data['classes']
         
+        if os.path.exists('column_learned_model.h5'):
+            self.column_model = load_model('column_learned_model.h5')
+        
+        if self.column_model == None:
+            print("MODEL NONE______________________________________")
         #set the probability threshold value
         self.prob_threshhold = 0.5
         
@@ -236,6 +270,7 @@ class Testing:
         
         #Predict class of input sentence
         mod_input = [self.process_input(sentence)]
+        print("REGULAR MOD INPUT:",mod_input,"From sentence:",sentence)
         if self.model != None:
             results = self.model.predict(np.array(mod_input))[0]
         else:
@@ -264,11 +299,74 @@ class Testing:
             return_list.append((self.classes[i[0]],str(i[1])))
         
         return return_list
+
+    
+    def column_process_input(self,sentence):
+        
+        special_chars = list(".'!@#$%^&*?")
+        
+        #tokenize the input sentence
+        input_words = word_tokenize(sentence.lower())
+        
+        #lemmatize and remove special characters
+        input_words = list(map(lemmatizer.lemmatize,input_words))
+        input_words = list(filter(lambda x:x not in special_chars,input_words))
+        
+        if self.column_words != None:
+            #Construct the vectorizer
+            cv = CountVectorizer(tokenizer=self.tokens,analyzer="word",stop_words=None)
+            input_words =' '.join(input_words)
+            
+            #Fit the vectorizer on the the words
+            words = ' '.join(self.column_words)
+            vectorize = cv.fit([words])
+            
+            # Create vector of input sentence
+            word_vector = vectorize.transform([input_words]).toarray().tolist()[0]
+            
+            return(np.array(word_vector)) 
+
+    def classify_columns(self,sentence):
+        
+        #Predict class of input sentence
+        
+        mod_input = [self.column_process_input(sentence)]
+        
+        print("Column MOD INPUT:",mod_input,"From sentence:",sentence)
+        if self.column_model != None:
+            results = self.column_model.predict(np.array(mod_input))[0]
+        else:
+            results = []
+        
+        print("results:",results)
+        
+        #Create list of class and probability
+        full_results = list(map(lambda x: [x[0],x[1]], enumerate(results)))
+        
+        print("fullresults:",full_results)
+        
+        #Retain the classes with higher probability
+        top_results = list(filter(lambda x: x[1]> self.prob_threshhold ,full_results))
+
+        print("fullresults:",top_results)
+        
+        #Sort in descending order
+        top_results.sort(key=lambda x: x[1], reverse=True)
+        
+        print("TOP:",top_results)
+        return_list = []
+
+        for i in top_results:
+            print(i)
+            return_list.append((self.column_classes[i[0]],str(i[1])))
+        
+        return return_list
+    
     
     
     def getQuery(self,sentence,intent):
         self.inputP = text_processing(sentence,intent['query'][0])
-        query = self.inputP.constructQuery()
+        query = self.inputP.constructQuery(self.tag,self.pred_columns)
         return query
     
     def results(self,sentence,userID):
@@ -278,15 +376,129 @@ class Testing:
         #Predict query tag
         query = None
         results = self.classify(sentence)
-        print("Results:",sentence,results)
-        
+        col_results = self.classify_columns(sentence)
+        print("Results:",sentence,":",results,":",col_results)
+
+
+        if len(col_results) > 0:
+            self.pred_columns = col_results[0][0]
         ans=""
+        
         if len(results) > 0:
-            tag = results[0][0]
-            intent = self.intents[tag]
+            self.tag = results[0][0]
+            print(self.intents)
+            intent = self.intents[self.tag]
             query = self.getQuery(sentence,intent)
        
             print("Query:",query)
+        
                             
         return query
+    
+    
+class manualTraining():
+    def __init__(self, sentence):
+        self.nlp = spacy.load('en_core_web_lg')
+        self.inputStr = self.nlp(sentence)
+        self.nlp2 = nltk.sent_tokenize(sentence)
+        #self.cols = self.processColumns()
+        self.nouns ,self.verbs = self.get_nouns()
+        self.noun_chunks = self.get_nounChunks()
+        self.entities,self.back_entities = self.get_entitiy()
+        self.cols = ['rank','title','genre','description','director','actors','years','runtime','rating','votes','revenue','metascore']
+    
+    def process_Training_input(self):
+        print(self.nouns)
+        print(self.verbs)
+        print(self.noun_chunks)
+        #for n in self.noun_chunks
+        print(self.entities,self.back_entities)
+        patterns = []
+        for n in self.nouns:
+            print("NOUNS:",n)
+            flag = True
+            print("Entitites:",self.entities[0][1],self.back_entities[0][1])
+            if len(self.entities) > 0 :
+                for e in self.entities:
+                    if n in e[1]:
+                        flag = False
+            
+            if len(self.back_entities) > 0 :
+                for e in self.back_entities:
+                    if n in e[1]:
+                        flag = False
+            
+            for c in self.cols:
+                if n in c:
+                    flag = False
+            if n == 'movie':
+                flag = False
+
+            if flag == True:
+                print("Appeding:",n)
+                patterns.append(n)
+        
+        for v in self.verbs:
+            print("VERBS:",v)
+            flag = True
+            for c in self.cols:
+                if v in c:
+                    flag = False
+            if flag == True:
+                print("Appeding:",v)
+                patterns.append(v)
+        
+        for nc in self.noun_chunks:
+            flag = True
+            print("NC:",str(nc),type(nc),type(str(nc)))
+            nc = str(nc)
+            if len(self.entities) > 0 :
+                for e in self.entities:
+                    if nc in e[1]:
+                        flag = False
+            
+            if len(self.back_entities) > 0 :
+                for e in self.back_entities:
+                    if nc in e[1]:
+                        flag = False
+           
+            print("NC:",nc,flag)
+            if flag == True:
+                print("Appeding:",nc)
+                patterns.append(nc)
+        
+        
+        print("PATTERNS:",patterns)
+        return patterns
+
+
+
+    def get_nouns(self):
+        nouns = []
+        verbs = []
+        for token in self.inputStr:
+            #print(token.text, token.lemma_, token.pos_, token.tag_, token.dep_,token.shape_, token.is_alpha, token.is_stop)
+            if token.pos_ in ['NOUN','PROPN'] or token.tag_ in ['NN','NNS','NNP','NNPS']:
+                nouns.append(token.lemma_)
+            if token.pos_ in ['VERB'] or token.tag_ in ['VB','VBG','VBD','VBN','VBP','VBZ','JJ']:
+                verbs.append(token.lemma_)
+        return nouns,verbs
+    
+    def get_nounChunks(self):
+        chunks = []
+        for noun_chunks in self.inputStr.noun_chunks:
+            chunks.append(noun_chunks)
+        return chunks
+    
+    def get_entitiy(self):
+        entities = []
+        back_entities =[]
+
+        for sent in self.nlp2:
+            for chunk in nltk.ne_chunk(nltk.pos_tag(nltk.word_tokenize(sent))):
+                if hasattr(chunk, 'label'):
+                    back_entities.append([chunk.label(),' '.join(c[0] for c in chunk)])
+        for ent in self.inputStr.ents:
+            entities.append([ent.label_,ent.text])
+        return entities,back_entities
 

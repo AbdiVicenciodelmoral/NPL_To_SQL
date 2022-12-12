@@ -1,0 +1,15 @@
+{
+ "title, actors": {
+  "patterns": [
+   "movies",
+   "show"
+  ]
+ },
+ "title, director": {
+  "patterns": [
+   "how many movies",
+   "many",
+   "have"
+  ]
+ }
+}
