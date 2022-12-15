@@ -13,7 +13,7 @@ BG_COLOR ="#1C1C1C"
 Black_Grey_COLOR ="#1C1C1C"
 TEXT_COLOR="#FFF"
 FONT="Calibri 14 bold"
-FONT_BOLD="Calibri 13 bold"
+FONT_BOLD="Calibri 14 bold"
 
 
 class ChatBot:
@@ -31,8 +31,8 @@ class ChatBot:
 
         #Interface Window Parameters
         self.window.title("IMDB Database Interface")
-        self.window.resizable(width=False,height=False)
-        self.window.configure(width=1000,height=1000,bg="#1C1C1C")
+        self.window.resizable(width=True,height=True)
+        self.window.configure(width=1500,height=1000,bg="#1C1C1C")
         self.window.resizable(True, True)
         
         mygreen = "#d2ffd2"
@@ -43,7 +43,7 @@ class ChatBot:
         style.theme_create( "yummy", parent="alt", settings={
                 "TNotebook": {"configure": {"tabmargins": [2, 5, 2, 0] } },
                 "TNotebook.Tab": {
-                    "configure": {"padding": [5, 1], "background": "#1C1C1C", "foreground": "white" },
+                    "configure": {"padding": [5, 1], "background": "#1C1C1C", "foreground": "white"},
                     "map":       {"background": [("selected", tabs)],
                                  "foreground": [("selected", "#1C1C1C")],
                                 "expand": [("selected", [1, 1, 1, 0])] } } } )
@@ -54,17 +54,17 @@ class ChatBot:
 
         self.tab = ttk.Notebook(self.window)
         self.tab.pack(expand=1,fill='both')
-        self.interface_frame = ttk.Frame(self.tab,width=520,height=520, style='Frame1.TFrame')
-        self.train_frame = ttk.Frame(self.tab,width=520,height=620,style='Frame1.TFrame')
-        self.advanced_train_frame = ttk.Frame(self.tab,width=520,height=520,style='Frame1.TFrame')
+        self.interface_frame = ttk.Frame(self.tab,width=820,height=520, style='Frame1.TFrame')
+        self.train_frame = ttk.Frame(self.tab,width=820,height=520,style='Frame1.TFrame')
+        #self.advanced_train_frame = ttk.Frame(self.tab,width=520,height=520,style='Frame1.TFrame')
         self.tab.add(self.interface_frame,text='Movie Database'.center(100))
         self.tab.add(self.train_frame,text='Train Model'.center(100))
-        self.tab.add(self.advanced_train_frame,text='Advanced Training'.center(100))
+        #self.tab.add(self.advanced_train_frame,text='Advanced Training'.center(100))
         
         #Add Tabs
         self.database_interface()
         self.train_interface()
-        self.advanced_training()
+        #self.advanced_training()
         
     def database_interface(self):
         #Heading
@@ -106,93 +106,93 @@ bordercolor='#252526', lightcolor='#252526', darkcolor='#252526')
         head_label.place(relwidth=1)
 
         #Pattern Label
-        patternlabel = Label(self.train_frame,bg=text_area,fg=text_color,text="Pattern",font=FONT)
-        patternlabel.place(relwidth=0.2,rely=0.15,relx=0.008,relheight=0.06)
+        patternlabel = Label(self.train_frame,bg=text_area,fg=text_color,text="Input",font=FONT)
+        patternlabel.place(relwidth=0.25,rely=0.15,relx=0.008,relheight=0.06)
         self.pattern = Entry(self.train_frame,bg=text_area,fg=text_color,font=FONT)
-        self.pattern.place(relwidth=0.7,relheight=0.06,rely=0.15,relx=0.22)
+        self.pattern.place(relwidth=0.7,relheight=0.06,rely=0.15,relx=0.28)
 
         #Columns
-        pos8 = 7
-        training_label = Label(self.train_frame,bg="#1C1C1C",fg=text_color,text="Advanced Training",font=FONT_BOLD)
-        training_label.place(relwidth=1,rely=0.25+0.08*pos8+0.01)
-        pos9 = 8
-        train_columnlabel = Label(self.train_frame,bg=text_area,fg=text_color,text="Column",font=FONT)
-        train_columnlabel.place(relwidth=0.2,rely=0.25+0.08*pos9+0.01,relx=0.008,relheight=0.06)
+        #pos8 = 7
+        #training_label = Label(self.train_frame,bg="#1C1C1C",fg=text_color,text="Advanced Training",font=FONT_BOLD)
+        #training_label.place(relwidth=1,rely=0.25+0.08*pos8+0.01)
+        #pos9 = 8
+        train_columnlabel = Label(self.train_frame,bg=text_area,fg=text_color,text="Columns",font=FONT)
+        train_columnlabel.place(relwidth=0.25,rely=0.23,relx=0.008,relheight=0.06)
         self.train_column_entry = Entry(self.train_frame,bg=text_area,fg=text_color,font=FONT)
-        self.train_column_entry.place(relwidth=0.7,relheight=0.06,rely=0.25+0.08*pos9+0.01,relx=0.22)
+        self.train_column_entry.place(relwidth=0.7,relheight=0.06,rely=0.23,relx=0.28)
         
         #Training Buttons
         k1 = 'select_full'
         q1 = self.training_queries[k1]
         pos = 0
         button1_label = Label(self.train_frame,bg=text_area,fg=text_color,text="Select Full Column",font=FONT)
-        button1_label.place(relwidth=0.2,rely=0.25+0.08*pos+0.01,relx=0.008,relheight=0.06)
+        button1_label.place(relwidth=0.25,rely=0.34+0.08*pos+0.01,relx=0.008,relheight=0.06)
         select_button = Button(self.train_frame,text=q1,
                                     font=FONT_BOLD,width=len(q1),bg="#00a17b"
                                     ,command=lambda: self.train_on_query(self.pattern.get(),k1,q1))   
-        select_button.place(relx=0.22,rely=0.25+0.08*pos+0.01,relheight=0.06,relwidth=0.70)
+        select_button.place(relx=0.28,rely=0.34+0.08*pos+0.01,relheight=0.06,relwidth=0.70)
 
         k2 = 'select'
         q2 = self.training_queries[k2]
         pos2 = 1
         button2_label = Label(self.train_frame,bg=text_area,fg=text_color,text="Select With Conditions",font=FONT)
-        button2_label.place(relwidth=0.2,rely=0.25+0.08*pos2+0.01,relx=0.008,relheight=0.06)
+        button2_label.place(relwidth=0.25,rely=0.34+0.08*pos2+0.01,relx=0.008,relheight=0.06)
         select_button = Button(self.train_frame,text=q2,
                                     font=FONT_BOLD,width=len(q2),bg="#00a17b"
                                     ,command=lambda: self.train_on_query(self.pattern.get(),k2,q2))   
-        select_button.place(relx=0.22,rely=0.25+0.08*pos2+0.01,relheight=0.06,relwidth=0.70)
+        select_button.place(relx=0.28,rely=0.34+0.08*pos2+0.01,relheight=0.06,relwidth=0.70)
 
         k3 = 'count'
         q3 = self.training_queries[k3]
         pos3 = 2
         button3_label = Label(self.train_frame,bg=text_area,fg=text_color,text="Count",font=FONT)
-        button3_label.place(relwidth=0.2,rely=0.25+0.08*pos3+0.01,relx=0.008,relheight=0.06)
+        button3_label.place(relwidth=0.25,rely=0.34+0.08*pos3+0.01,relx=0.008,relheight=0.06)
         select_button = Button(self.train_frame,text=q3,
                                     font=FONT_BOLD,width=len(q3),bg="#00a17b"
                                     ,command=lambda: self.train_on_query(self.pattern.get(),k3,q3))   
-        select_button.place(relx=0.22,rely=0.25+0.08*pos3+0.01,relheight=0.06,relwidth=0.70)
+        select_button.place(relx=0.28,rely=0.34+0.08*pos3+0.01,relheight=0.06,relwidth=0.70)
 
 
         k4 = 'sum'
         q4 = self.training_queries[k4]
         pos4 = 3
         button4_label = Label(self.train_frame,bg=text_area,fg=text_color,text="Sum",font=FONT)
-        button4_label.place(relwidth=0.2,rely=0.25+0.08*pos4+0.01,relx=0.008,relheight=0.06)
+        button4_label.place(relwidth=0.25,rely=0.34+0.08*pos4+0.01,relx=0.008,relheight=0.06)
         select_button = Button(self.train_frame,text=q4,
                                     font=FONT_BOLD,width=len(q4),bg="#00a17b"
                                     ,command=lambda: self.train_on_query(self.pattern.get(),k4,q4))   
-        select_button.place(relx=0.22,rely=0.25+0.08*pos4+0.01,relheight=0.06,relwidth=0.70)
+        select_button.place(relx=0.28,rely=0.34+0.08*pos4+0.01,relheight=0.06,relwidth=0.70)
 
         k5 = 'avg'
         q5= self.training_queries[k5]
         pos5 = 4
         button5_label = Label(self.train_frame,bg=text_area,fg=text_color,text="AVG",font=FONT)
-        button5_label.place(relwidth=0.2,rely=0.25+0.08*pos5+0.01,relx=0.008,relheight=0.06)
+        button5_label.place(relwidth=0.25,rely=0.34+0.08*pos5+0.01,relx=0.008,relheight=0.06)
         select_button = Button(self.train_frame,text=q5,
                                     font=FONT_BOLD,width=len(q5),bg="#00a17b"
                                     ,command=lambda: self.train_on_query(self.pattern.get(),k5,q5))   
-        select_button.place(relx=0.22,rely=0.25+0.08*pos5+0.01,relheight=0.06,relwidth=0.70)
+        select_button.place(relx=0.28,rely=0.34+0.08*pos5+0.01,relheight=0.06,relwidth=0.70)
 
         k6 = 'min'
         q6 = self.training_queries[k6]
         pos6 = 5
         button6_label = Label(self.train_frame,bg=text_area,fg=text_color,text="Min",font=FONT)
-        button6_label.place(relwidth=0.2,rely=0.25+0.08*pos6+0.01,relx=0.008,relheight=0.06)
+        button6_label.place(relwidth=0.25,rely=0.34+0.08*pos6+0.01,relx=0.008,relheight=0.06)
         select_button = Button(self.train_frame,text=q6,
                                     font=FONT_BOLD,width=len(q6),bg="#00a17b"
                                     ,command=lambda: self.train_on_query(self.pattern.get(),k6,q6))   
-        select_button.place(relx=0.22,rely=0.25+0.08*pos6+0.01,relheight=0.06,relwidth=0.70)
+        select_button.place(relx=0.28,rely=0.34+0.08*pos6+0.01,relheight=0.06,relwidth=0.70)
 
 
         k7 = 'max'
         q7 = self.training_queries[k7]
         pos7 = 6
         button7_label = Label(self.train_frame,bg=text_area,fg=text_color,text="Max",font=FONT)
-        button7_label.place(relwidth=0.2,rely=0.25+0.08*pos7+0.01,relx=0.008,relheight=0.06)
+        button7_label.place(relwidth=0.25,rely=0.34+0.08*pos7+0.01,relx=0.008,relheight=0.06)
         select_button = Button(self.train_frame,text=q7,
                                     font=FONT_BOLD,width=len(q7),bg="#00a17b"
                                     ,command=lambda: self.train_on_query(self.pattern.get(),k7,q7))   
-        select_button.place(relx=0.22,rely=0.25+0.08*pos7+0.01,relheight=0.06,relwidth=0.70)
+        select_button.place(relx=0.28,rely=0.34+0.08*pos7+0.01,relheight=0.06,relwidth=0.70)
 
 
 
@@ -246,15 +246,18 @@ bordercolor='#252526', lightcolor='#252526', darkcolor='#252526')
     def train_on_query(self,pattern,key,query):
         print("Training:",pattern,key,query)
         #read intent file and append created class,pattern and queries from train_interface function
-        print("Columns",self.train_column_entry.get())
-        in_proc = inputProc.manualTraining(pattern)
-        patterns = in_proc.process_Training_input()
-        cols = self.train_column_entry.get()
+        in_proc_manual = inputProc.manualTraining(pattern)
+        cols = in_proc_manual.process_train_columns(self.train_column_entry.get())
+        print("Columns",cols)
+        
+        query_patterns = in_proc_manual.process_Training_input()
+        col_patterns = in_proc_manual.columns_process_Training_input()
+        
         
         if cols:
             with open('column_intents.json','r+') as json_file:
                 file_data=json.load(json_file)
-                for p in patterns:
+                for p in col_patterns:
                     if cols in file_data:
                         file_data[cols]['patterns'].append(p)
                         file_data[cols]['patterns'] = list(set(file_data[cols]['patterns']))
@@ -269,7 +272,7 @@ bordercolor='#252526', lightcolor='#252526', darkcolor='#252526')
         
         with open('intents.json','r+') as json_file:
             file_data=json.load(json_file)
-            for p in patterns:
+            for p in query_patterns:
                 if key in file_data:
                     file_data[key]['patterns'].append(p)
                     file_data[key]['patterns'] = list(set(file_data[key]['patterns']))

@@ -2,6 +2,7 @@
  "select": {
   "patterns": [
    "movies",
+   "with",
    "show"
   ],
   "query": [
@@ -10,12 +11,78 @@
  },
  "count": {
   "patterns": [
-   "how many movies",
+   "have",
    "many",
-   "have"
+   "How many movies"
   ],
   "query": [
    "SELECT COUNT([columns]) FROM imdb.imdb WHERE [conditions]"
+  ]
+ },
+ "sum": {
+  "patterns": [
+   "by",
+   "be",
+   "What",
+   "movies",
+   "for",
+   "the total ",
+   "with",
+   "total"
+  ],
+  "query": [
+   "SELECT SUM([columns]) FROM imdb.imdb WHERE [conditions]"
+  ]
+ },
+ "avg": {
+  "patterns": [
+   "average",
+   "be",
+   "What",
+   "movies",
+   "for",
+   "with",
+   "the average "
+  ],
+  "query": [
+   "SELECT AVG([columns]) FROM imdb.imdb WHERE [conditions]"
+  ]
+ },
+ "max": {
+  "patterns": [
+   "be",
+   "What",
+   "movies",
+   "of",
+   "the maximum ",
+   "with",
+   "maximum"
+  ],
+  "query": [
+   "SELECT MAX([columns]) FROM imdb.imdb WHERE [conditions]"
+  ]
+ },
+ "min": {
+  "patterns": [
+   "by",
+   "be",
+   "What",
+   "the minimum ",
+   "movies",
+   "for",
+   "minimum"
+  ],
+  "query": [
+   "SELECT MIN([columns]) FROM imdb.imdb WHERE [conditions]"
+  ]
+ },
+ "select_full": {
+  "patterns": [
+   "all movie s",
+   "show"
+  ],
+  "query": [
+   "SELECT [columns] FROM imdb.imdb"
   ]
  }
 }

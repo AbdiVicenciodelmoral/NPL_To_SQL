@@ -57,7 +57,7 @@ class text_processing:
         verbs = []
         for token in self.inputStr:
             #print(token.text, token.lemma_, token.pos_, token.tag_, token.dep_,token.shape_, token.is_alpha, token.is_stop)
-            if token.pos_ in ['NOUN','PROPN'] or token.tag_ in ['NN','NNS','NNP','NNPS']:
+            if token.pos_ in ['NOUN','PROPN'] or token.tag_ in ['NN','NNS','NNP','NNPS','ADP']:
                 nouns.append(token.lemma_)
             if token.pos_ in ['VERB'] or token.tag_ in ['VB','VBG','VBD','VBN','VBP','VBZ','JJ']:
                 verbs.append(token.lemma_)
@@ -105,7 +105,7 @@ class text_processing:
         return columns
     
     def add_person(self,p):
-        if 'title' in self.columns and not 'director' in self.columns and not 'actor' in self.columns:
+        if 'title' in self.columns and not 'director' in self.columns and not 'actors' in self.columns:
             print("Adding Actor")
             c = "imdb.actors LIKE \'%{actor}%\'".format(actor=p[1])
             self.conditions.append(c)
@@ -117,10 +117,10 @@ class text_processing:
             self.conditions.append(c)
             self.columns.remove('director')
                         
-        if 'actor'in self.columns:
+        if 'actors'in self.columns:
             c = "imdb.actors LIKE \'%{actor}%\'".format(actor=p[1])
             self.conditions.append(c)
-            self.columns.remove('actor')
+            self.columns.remove('actors')
                     
     def unique_conditions(self,P):
         holder = []
@@ -131,17 +131,24 @@ class text_processing:
 
     def constructQuery(self,tag,pred_columns):
         print("NOUNS:",self.nouns)
+        print("NOUN_Chunks:",self.noun_chunks)
         print("VERBS:",self.verbs)
         print("COLUMNS:",self.columns)
         print("ENTITIES:",self.entities)
         print("B_ENTITIES:",self.back_entities)
         print("Predicted columns:",pred_columns)
-        pred_cols = pred_columns.replace(',',"")
-        pred_cols = pred_cols.split()
-
-        print("After token PREDICTED COLUMNS:",pred_cols)
-        self.columns = list(set(self.columns)|set(pred_cols))
-        print("AFter Union:",self.columns)
+        
+        if pred_columns != None:
+            pred_cols = ""
+            if ',' in pred_columns and ' ' not in pred_columns:
+                pred_cols = pred_columns.split(',')
+            if ' ' in pred_columns:
+                pred_cols = pred_columns.replace(',',"")
+                pred_cols = pred_cols.split()
+            
+            print("After token PREDICTED COLUMNS:",pred_cols)
+            self.columns = list(set(self.columns)|set(pred_cols))
+            print("AFter Union:",self.columns)
         people = []
         for e in self.entities:
             print(e)
@@ -189,14 +196,18 @@ class text_processing:
                 self.pred = self.pred.replace('[conditions]',self.conditions[i])
         else:
             print("NO CONDITIONs")
-            self.pred.replace("WHERE [conditions]","")
+            self.pred = self.pred.replace("WHERE [conditions]","")
         
         print(self.pred)
+
+
+
+
         return self.pred
 
 
 lemmatizer=WordNetLemmatizer()
-context={};
+context={}
 class Testing:
     def __init__(self):
         #load the intent file
@@ -233,9 +244,7 @@ class Testing:
         if self.column_model == None:
             print("MODEL NONE______________________________________")
         #set the probability threshold value
-        self.prob_threshhold = 0.5
-        
-
+        self.prob_threshhold = 0.2
     def tokens(self,text):
         tokens = word_tokenize(text)
         return tokens
@@ -406,7 +415,96 @@ class manualTraining():
         self.noun_chunks = self.get_nounChunks()
         self.entities,self.back_entities = self.get_entitiy()
         self.cols = ['rank','title','genre','description','director','actors','years','runtime','rating','votes','revenue','metascore']
-    
+
+        self.verb_patterns = [[{"POS":"AUX"}, {"POS":"VERB"}, {"POS":"ADP"}], 
+                              [{"POS":"AUX"},{"POS":"VERB"}],[{"POS":"ADJ"}],
+                              [{"POS":"NOUN"},{"POS":"VERB"}],
+                              [{"POS": "PREP"},{"POS":"VERB"}],
+                              [{"POS":"NOUN"},{"POS":"VERB"}, {"POS":"ADP"},{"POS":"NOUN"}],
+                              [{"POS": "PREP"},{"POS":"VERB"},{"POS":"NOUN"}],
+                              [{"POS":"VERB"}],
+                              [{"POS":"NOUN"},{"POS":"ADP"}]
+                              ]
+
+
+    def process_train_columns(self,cols):
+        cols = cols.lower()
+        if ',' not in cols and ' ' not in cols:
+            cols = [cols] 
+        if ',' in cols and ' ' not in cols:
+                cols = cols.split(',')
+        if ' ' in cols:
+                cols = cols.replace(',',"")
+                cols = cols.split()
+        
+        cols.sort()
+        cols = ",".join(cols)
+        return cols
+
+    def columns_process_Training_input(self):
+        print(self.nouns)
+        print(self.verbs)
+        print(self.noun_chunks)
+        #for n in self.noun_chunks
+        print(self.entities,self.back_entities)
+        patterns = []
+        for n in self.nouns:
+            print("NOUNS:",n)
+            flag = True
+            
+            if len(self.entities) > 0 :
+                print("Entitites:",self.entities[0][1],self.back_entities[0][1])
+                for e in self.entities:
+                    if n in e[1]:
+                        flag = False
+            
+            if len(self.back_entities) > 0 :
+                for e in self.back_entities:
+                    if n in e[1]:
+                        flag = False
+            
+            for c in self.cols:
+                if n in c:
+                    flag = True
+            if n == 'movie':
+                flag = False
+            
+            if n in ['what','for','be','of']:
+                flag = False
+            
+            if flag == True:
+                print("Appeding:",n)
+                patterns.append(n)
+
+        for v in self.verbs:
+            patterns.append(v)
+        
+        for nc in self.noun_chunks:
+            flag = True
+            print("NC:",str(nc),type(nc),type(str(nc)))
+            nc = str(nc)
+            if len(self.entities) > 0 :
+                for e in self.entities:
+                    if nc in e[1]:
+                        flag = False
+            
+            if len(self.back_entities) > 0 :
+                for e in self.back_entities:
+                    if nc in e[1]:
+                        flag = False
+           
+            print("NC:",nc,flag)
+            print("THE COLUMNS:",self.cols)
+            if flag == True:
+                print("Appeding:",nc)
+                patterns.append(nc)
+        
+        vp, nouns = self.find_triplet()
+        patterns.append(vp)
+        
+        print("PATTERNS:",patterns)
+        return patterns
+
     def process_Training_input(self):
         print(self.nouns)
         print(self.verbs)
@@ -417,8 +515,9 @@ class manualTraining():
         for n in self.nouns:
             print("NOUNS:",n)
             flag = True
-            print("Entitites:",self.entities[0][1],self.back_entities[0][1])
+            
             if len(self.entities) > 0 :
+                print("Entitites:",self.entities[0][1],self.back_entities[0][1])
                 for e in self.entities:
                     if n in e[1]:
                         flag = False
@@ -463,6 +562,11 @@ class manualTraining():
                         flag = False
            
             print("NC:",nc,flag)
+            print("THE COLUMNS:",self.cols)
+            for c in self.cols:
+                print("Checking:",c,nc)
+                if c in nc:
+                    nc = nc.replace(c,'')
             if flag == True:
                 print("Appeding:",nc)
                 patterns.append(nc)
@@ -477,8 +581,9 @@ class manualTraining():
         nouns = []
         verbs = []
         for token in self.inputStr:
-            #print(token.text, token.lemma_, token.pos_, token.tag_, token.dep_,token.shape_, token.is_alpha, token.is_stop)
-            if token.pos_ in ['NOUN','PROPN'] or token.tag_ in ['NN','NNS','NNP','NNPS']:
+            print("Token:",token)
+            print(token.text, token.lemma_, token.pos_, token.tag_, token.dep_,token.shape_, token.is_alpha, token.is_stop)
+            if token.pos_ in ['NOUN','PROPN','ADP'] or token.tag_ in ['NN','NNS','NNP','NNPS','ADP']:
                 nouns.append(token.lemma_)
             if token.pos_ in ['VERB'] or token.tag_ in ['VB','VBG','VBD','VBN','VBP','VBZ','JJ']:
                 verbs.append(token.lemma_)
@@ -502,3 +607,28 @@ class manualTraining():
             entities.append([ent.label_,ent.text])
         return entities,back_entities
 
+
+    def longer_verb_phrase(self,verb_phrases):
+        longest_length = 0
+        longest_verb_phrase = None
+        for verb_phrase in verb_phrases:
+            if len(verb_phrase) > longest_length:
+                longest_verb_phrase = verb_phrase
+        return str(longest_verb_phrase)
+
+    def get_verb_phrases(self):
+        verb_phrases = textacy.extract.matches.token_matches(self.inputStr, self.verb_patterns)
+        new_vps = []
+        
+        for verb_phrase in verb_phrases:
+            new_vps.append(verb_phrase)
+        return new_vps
+    
+    def find_triplet(self):
+        self.get_verb_phrases()
+        verb_phrases = list(self.get_verb_phrases())
+        verb_phrase = None
+        if (len(verb_phrases) > 0 ):
+            verb_phrase = self.longer_verb_phrase(list(verb_phrases))
+            
+        return verb_phrase, self.nouns

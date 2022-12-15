@@ -1,0 +1,30 @@
+{  
+    "select_full":{
+         "patterns": ["show column", "column","all rows", "all","all movies"],
+         "query": ["SELECT [columns] FROM imdb.imdb WHERE [conditions];"]},
+    
+     "select":{
+         "patterns": ["what are", "was","with", "in it","was","movies with","act in","by"],
+         "query": ["SELECT [columns] FROM imdb.imdb WHERE [conditions];"]},
+    
+    "count":{
+         "patterns": ["how many", "many","amount", "count","number"],
+         "query": ["SELECT COUNT([columns]) FROM imdb.imdb WHERE [conditions];"]},  
+    
+    "sum":{
+         "patterns": ["how much", "total","sum", "add","was","total amount","What is the sum"],
+         "query": ["SELECT SUM([columns]), FROM imdb.imdb WHERE [conditions];"]},
+    
+    "avg":{
+         "patterns": ["average", "per","mean"],
+         "query": ["SELECT AVG([columns]), FROM imdb.imdb WHERE [conditions];"]},
+
+    "min":{
+         "patterns": ["least", "smallest","lowest","minimum","What is the minimum","min"],
+         "query": ["SELECT MIN([columns]), FROM imdb.imdb WHERE [conditions];"]},
+   
+    "max":{
+         "patterns": ["most", "largest","highest","maximum","What is the mmaximum","max"],
+         "query": ["SELECT MAX([columns]), FROM imdb.imdb WHERE [conditions];"]}
+
+}

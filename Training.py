@@ -2,8 +2,8 @@ import nltk, random, json , pickle
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
 from nltk import flatten
-nltk.download('punkt');nltk.download('wordnet')
-
+nltk.download('punkt')
+nltk.download('wordnet')
 import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer
 from tensorflow.keras.models import Sequential
@@ -19,6 +19,7 @@ class initializeModel:
         # read and load the intent file which contains sql structure
         data_file = open('intents.json').read()
         self.intents = json.loads(data_file)
+        
 
 
     def process_data(self):
@@ -96,7 +97,7 @@ class initializeModel:
         else:
             self.train_X = []
             self.train_y = []
-            
+
         print("TRAIN X:",self.train_X)
         print("TRAIN Y:",self.train_y)
 
@@ -109,7 +110,9 @@ class initializeModel:
         if len(self.train_X) > 0 and len(self.train_y) == len(self.train_X):
             model=Sequential()
             
-            #input layer with latent dimension of 128 neurons and ReLU activation function 
+            #input layer with 128 neurons and ReLU activation function 
+            model.add(Dense(256,input_shape=(len(self.train_X[0]),),activation='relu'))
+            model.add(Dropout(0.5)) #Dropout to avoid overfitting
             model.add(Dense(128,input_shape=(len(self.train_X[0]),),activation='relu'))
             model.add(Dropout(0.5)) #Dropout to avoid overfitting
             
@@ -136,6 +139,40 @@ class initializeModel:
 
         else:
             print("NO TRAINING DATA AVAILABLE")
+
+    def test_model_params(self):
+        # Construct a Sequential model with 3 layers.
+        if len(self.train_X) > 0 and len(self.train_y) == len(self.train_X):
+            n_hiddens = [512, 256, 128, 64, 32, 16, 8, 4, 2, 1]
+            scores = []
+            for n_hidden in n_hiddens:
+                model=Sequential()
+                
+                #input layer with latent dimension of 128 neurons and ReLU activation function 
+                model.add(Dense(n_hidden,input_shape=(len(self.train_X[0]),),activation='relu'))
+                
+                model.add(Dropout(0.5)) #Dropout to avoid overfitting
+                
+                #second layer with the latent dimension of 64 neurons
+                model.add(Dense(64,activation='relu')) 
+                model.add(Dropout(0.5))
+                
+                #fully connected output layer with softmax activation function
+                model.add(Dense(len(self.train_y[0]),activation='softmax')) 
+                
+                # Using the adagrad optimizer
+                ada = Adagrad(learning_rate=0.1, initial_accumulator_value=0.1, epsilon=1e-07)
+                
+                model.compile(loss='categorical_crossentropy',optimizer=ada,metrics=['accuracy'])
+                
+                hist=model.fit(np.array(self.train_X),np.array(self.train_y),epochs=200,batch_size=10,verbose=1)
+                # save model 
+                model.save('column_learned_model.h5',hist)
+                # save words and classes
+                pickle.dump({'words':self.words,'classes':self.classes,'train_x':self.train_X,'train_y':self.train_y},
+                            open("column_training_data","wb"))
+
+                model.summary()
 
 
 class initialize_Col_Model:
@@ -262,13 +299,52 @@ class initialize_Col_Model:
         else:
             print("NO TRAINING DATA AVAILABLE")
 
+    def test_column_model_params(self):
+        # Construct a Sequential model with 3 layers.
+        if len(self.train_X) > 0 and len(self.train_y) == len(self.train_X):
+            n_hiddens = [512, 256, 128, 64, 32, 16, 8, 4, 2, 1]
+            scores = []
+            for n_hidden in n_hiddens:
+                model=Sequential()
+                
+                #input layer with latent dimension of 128 neurons and ReLU activation function 
+                model.add(Dense(n_hidden,input_shape=(len(self.train_X[0]),),activation='relu'))
+                model.add(Dropout(0.5)) #Dropout to avoid overfitting
+                
+                #second layer with the latent dimension of 64 neurons
+                model.add(Dense(64,activation='relu')) 
+                model.add(Dropout(0.5))
+                
+                #fully connected output layer with softmax activation function
+                model.add(Dense(len(self.train_y[0]),activation='softmax')) 
+                
+                # Using the adagrad optimizer
+                ada = Adagrad(learning_rate=0.1, initial_accumulator_value=0.1, epsilon=1e-07)
+                
+                model.compile(loss='categorical_crossentropy',optimizer=ada,metrics=['accuracy'])
+                
+                hist=model.fit(np.array(self.train_X),np.array(self.train_y),epochs=200,batch_size=10,verbose=1)
+                # save model 
+                model.save('column_learned_model.h5',hist)
+                # save words and classes
+                pickle.dump({'words':self.words,'classes':self.classes,'train_x':self.train_X,'train_y':self.train_y},
+                            open("column_training_data","wb"))
+
+                model.summary()
+
+
 
 def main():
-    #T = initializeModel()
-    #T.process_data()
-    #T.construct_training_data()
-    #T.build_model()
-    pass
+    T = initializeModel()
+    T.process_data()
+    T.construct_training_data()
+    T.build_model()
+  
+
+    C = initialize_Col_Model()
+    C.process_data()
+    C.construct_training_data()
+    C.build_model()
 
 if __name__ == '__main__':
     main()

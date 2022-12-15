@@ -1,0 +1,61 @@
+{
+ "actors,title": {
+  "patterns": [
+   "with",
+   "movies with",
+   "show",
+   "movies"
+  ]
+ },
+ "director,title": {
+  "patterns": [
+   "were directed by",
+   "directed",
+   "many",
+   "movies",
+   "amount",
+   "direct",
+   "by"
+  ]
+ },
+ "director,revenue": {
+  "patterns": [
+   "the total revenue",
+   "directed",
+   "movies",
+   "direct",
+   "total",
+   "direct",
+   "by"
+  ]
+ },
+ "actors,rating": {
+  "patterns": [
+   "the maximum rating",
+   "movies with",
+   "the average rating",
+   "the minimum rating",
+   "with",
+   "rate",
+   "rating",
+   "actor"
+  ]
+ },
+ "actors,revenue": {
+  "patterns": [
+    "the total revenue",
+   "revenue",
+   "movies with",
+   "maximum revenue",
+   "actor"
+  ]
+ },
+ "actors,metascore": {
+  "patterns": [
+   "movies with",
+   "the average metascore",
+   "metascore",
+   "actor"
+  ]
+ }
+}
