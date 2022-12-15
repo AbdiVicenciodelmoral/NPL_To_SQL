@@ -1,0 +1,15 @@
+	
+Show all movie titles
+Show movies with Tom Hanks
+Show movie titles with Jennifer Lawrence
+Display movies with Keanu Reeves
+show movies directed by Tim Burton
+How many movies has Mel Gibson directed?
+Amount of movies directed by Mel Gibson
+What is the total revenue for movies directed by Mel Gibson
+What is the total revenue for movies with Chris Pratt
+What is the average rating for movies with Emma Watson
+What is the average metascore for movies directed by Tim Burton
+What is the lowest rating for movies with Tom Hanks
+What is the highest rating for movies directed by Tim Burton
+What is the highest metascore for movies with Will Ferrell

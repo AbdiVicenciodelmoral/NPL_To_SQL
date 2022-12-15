@@ -1,88 +1,99 @@
 {
+ "select_full": {
+  "patterns": [
+   "show column",
+   "column",
+   "all rows",
+   "all",
+   "all movies"
+  ],
+  "query": [
+   "SELECT [columns] FROM imdb.imdb WHERE [conditions];"
+  ]
+ },
  "select": {
   "patterns": [
    "movies",
+   "display",
+   "was",
    "with",
-   "show"
+   "what are",
+   "act in",
+   "in it",
+   "by",
+   "Display movies",
+   "what was",
+   "show",
+   "movies with"
   ],
   "query": [
-   "SELECT [columns] FROM imdb.imdb WHERE [conditions]"
+   "SELECT [columns] FROM imdb.imdb WHERE [conditions];"
   ]
  },
  "count": {
   "patterns": [
-   "have",
+   "by",
    "many",
-   "How many movies"
+   "the amount",
+   "how many",
+   "number",
+   "count",
+   "movies",
+   "amount",
+   "of"
   ],
   "query": [
-   "SELECT COUNT([columns]) FROM imdb.imdb WHERE [conditions]"
+   "SELECT COUNT([columns]) FROM imdb.imdb WHERE [conditions];"
   ]
  },
  "sum": {
   "patterns": [
-   "by",
-   "be",
-   "What",
-   "movies",
-   "for",
-   "the total ",
+   "how much",
+   "total",
+   "total amount",
    "with",
-   "total"
+   "the total ",
+   "be",
+   "sum",
+   "What",
+   "was",
+   "add",
+   "What is the sum",
+   "movies",
+   "for"
   ],
   "query": [
-   "SELECT SUM([columns]) FROM imdb.imdb WHERE [conditions]"
+   "SELECT SUM([columns]) FROM imdb.imdb WHERE [conditions];"
   ]
  },
  "avg": {
   "patterns": [
+   "with",
+   "mean",
+   "the average ",
+   "per",
+   "be",
    "average",
-   "be",
-   "What",
    "movies",
-   "for",
-   "with",
-   "the average "
+   " What",
+   "for"
   ],
   "query": [
-   "SELECT AVG([columns]) FROM imdb.imdb WHERE [conditions]"
-  ]
- },
- "max": {
-  "patterns": [
-   "be",
-   "What",
-   "movies",
-   "of",
-   "the maximum ",
-   "with",
-   "maximum"
-  ],
-  "query": [
-   "SELECT MAX([columns]) FROM imdb.imdb WHERE [conditions]"
+   "SELECT AVG([columns]) FROM imdb.imdb WHERE [conditions];"
   ]
  },
  "min": {
   "patterns": [
-   "by",
-   "be",
-   "What",
-   "the minimum ",
    "movies",
+   "smallest ",
    "for",
-   "minimum"
+   "the lowest ",
+   "What",
+   "with",
+   "be"
   ],
   "query": [
    "SELECT MIN([columns]) FROM imdb.imdb WHERE [conditions]"
-  ]
- },
- "select_full": {
-  "patterns": [
-   "all movie s",
-   "show"
-  ],
-  "query": [
-   "SELECT [columns] FROM imdb.imdb"
   ]
  }
 }

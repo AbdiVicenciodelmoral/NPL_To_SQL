@@ -13,18 +13,10 @@
     
     "sum":{
          "patterns": ["how much", "total","sum", "add","was","total amount","What is the sum"],
-         "query": ["SELECT SUM([columns]), FROM imdb.imdb WHERE [conditions];"]},
+         "query": ["SELECT SUM([columns]) FROM imdb.imdb WHERE [conditions];"]},
     
     "avg":{
          "patterns": ["average", "per","mean"],
-         "query": ["SELECT AVG([columns]), FROM imdb.imdb WHERE [conditions];"]},
-
-    "min":{
-         "patterns": ["least", "smallest","lowest","minimum","What is the minimum","min"],
-         "query": ["SELECT MIN([columns]), FROM imdb.imdb WHERE [conditions];"]},
-   
-    "max":{
-         "patterns": ["most", "largest","highest","maximum","What is the mmaximum","max"],
-         "query": ["SELECT MAX([columns]), FROM imdb.imdb WHERE [conditions];"]}
+         "query": ["SELECT AVG([columns]) FROM imdb.imdb WHERE [conditions];"]}
 
 }

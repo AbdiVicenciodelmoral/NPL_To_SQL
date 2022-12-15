@@ -1,78 +1,96 @@
 {
  "actors,title": {
   "patterns": [
-   "movies",
-   "show",
    "with",
-   "movies with"
+   "movies with",
+   "Display movies",
+   "show",
+   "display",
+   "movies"
   ]
  },
  "director,title": {
   "patterns": [
-   "directed",
-   "have",
-   "direct",
    "many",
-   "How many movies"
+   "movies",
+   "directed",
+   "were directed by",
+   "by",
+   "made by",
+   "amount",
+   "show",
+   "direct"
   ]
  },
  "director,revenue": {
   "patterns": [
-   "by",
    "the total revenue",
-   "be",
    "directed",
-   "What",
    "movies",
    "direct",
-   "revenue",
-   "total"
-  ]
- },
- "actors,revenue": {
-  "patterns": [
-   "be",
-   "What",
-   "movies",
-   "revenue",
-   "maximum",
-   "the maximum revenue",
-   "with",
-   "movies with",
-   "the total revenue",
-   "total"
+   "total",
+   "direct",
+   "by",
+   "make",
+   "how much"
   ]
  },
  "actors,rating": {
   "patterns": [
-   "average",
-   "be",
-   "the average rating",
-   "What",
    "movies",
-   "rating",
+   "the maximum rating",
+   "What",
    "with",
+   "be",
+   "rate",
+   "the lowest rating",
+   "the average rating",
+   "rating",
+   "actor",
+   "the minimum rating",
    "movies with"
+  ]
+ },
+ "actors,revenue": {
+  "patterns": [
+   "the total revenue",
+   "revenue",
+   "movies with",
+   "maximum revenue",
+   "actor"
+  ]
+ },
+ "actors,metascore": {
+  "patterns": [
+   "movies with",
+   "the average metascore",
+   "metascore",
+   "actor"
   ]
  },
  "director,rating": {
   "patterns": [
+   "movies",
+   "direct",
+   "minimum",
+   "the highest rating",
    "by",
    "be",
-   "directed",
+   "rate",
    "What",
    "the minimum rating",
-   "movies",
-   "minimum",
+   "directed",
    "rating",
-   "direct"
+   "average rate",
+   "made by"
   ]
  },
  "title": {
   "patterns": [
    "title",
    "all movie titles",
-   "show"
+   "movies",
+   "films"
   ]
  }
 }

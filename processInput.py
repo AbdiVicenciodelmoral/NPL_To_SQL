@@ -477,7 +477,12 @@ class manualTraining():
                 patterns.append(n)
 
         for v in self.verbs:
-            patterns.append(v)
+            flag = True
+            if n in ['what','for','be','of']:
+                flag = False
+            
+            if flag == True:
+                patterns.append(v)
         
         for nc in self.noun_chunks:
             flag = True
