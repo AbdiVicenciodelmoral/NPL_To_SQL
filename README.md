@@ -1,5 +1,7 @@
 # CS580_Database_Project
- NLP to SQL using Deep Learning
+
+
+ This application converts natural language into SQL using Deep Learning. The SQL queries are then submitted to a database, to test accuracy. The database pertains to movie information using the IMDB dataset.
  
 Create a working directory
 Save files to directory
