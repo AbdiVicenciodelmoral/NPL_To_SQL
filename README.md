@@ -1,4 +1,4 @@
-# CS580_Database_Project
+# NPL to SQL
 
 
  This application converts natural language into SQL using Deep Learning. The SQL queries are then submitted to a database, to test accuracy. The database pertains to movie information using the IMDB dataset.
